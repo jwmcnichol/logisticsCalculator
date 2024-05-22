@@ -1,0 +1,118 @@
+class LogiShip:
+    def __init__(self, name, rep_type, rep_number_type_1, rep_number_type_2, rep_value_type_1, rep_value_type_2):
+        self.name = name
+        self.rep_type = rep_type
+        self.rep_number_type_1 = rep_number_type_1
+        self.rep_number_type_2 = rep_number_type_2
+        self.rep_value_type_1 = rep_value_type_1
+        self.rep_value_type_2 = rep_value_type_2
+
+    def __repr__(self):
+        return f"LogiShip(name={self.name}," \
+               f" rep_type={self.rep_type}," \
+               f" rep_number_type_1={self.rep_number_type_1}," \
+               f" rep_value_type_1={self.rep_value_type_1}," \
+               f" range={self.range})"  ## ??
+
+    def calculate_repair_output(self):
+        raw_amt = int(self.rep_number_type_1 *
+                      self.rep_value_type_1)
+        return raw_amt
+
+    def repair_ship(self, reps_target):
+        raw_repair_output = self.calculate_repair_output()
+        print(type(raw_repair_output), raw_repair_output, "raw type")
+
+        # need to split to shield and armor functions, with direction from initiating function
+        # *****************************************************************************************
+
+        shield_em_repair = raw_repair_output / (1 - reps_target.shield_EM)
+        print(raw_repair_output, reps_target.shield_trm, "trm")
+        shield_trm_repair = raw_repair_output / (1 - reps_target.shield_trm)
+        shield_kin_repair = raw_repair_output / (1 - reps_target.shield_kin)
+        shield_exp_repair = raw_repair_output / (1 - reps_target.shield_exp)
+
+        print("SHIELD: ")
+        print("EM:", shield_em_repair)
+        print("TRM:", shield_trm_repair)
+        print("KIN:", shield_kin_repair)
+        print("EXP:", shield_exp_repair)
+
+
+
+        return shield_em_repair, shield_trm_repair, shield_kin_repair, shield_exp_repair
+
+class TargetShip:
+    def __init__(self, name, shield_EM, shield_trm, shield_kin, shield_exp, armor_EM, armor_trm, armor_kin, armor_exp):
+        self.name = name
+        self.shield_EM = shield_EM
+        self.shield_trm = shield_trm
+        self.shield_kin = shield_kin
+        self.shield_exp = shield_exp
+        self.armor_EM = armor_EM
+        self.armor_trm = armor_trm
+        self.armor_kin = armor_kin
+        self.armor_exp = armor_exp
+
+    def __repr__(self):
+        return (f"TargetShip(name={self.name}, shield_EM={self.shield_EM}, shield_trm={self.shield_trm}, "
+                f"shield_kin={self.shield_kin}, shield_exp={self.shield_exp}, "
+                f"armor_EM={self.armor_EM}, armor_trm={self.armor_trm}, armor_kin={self.armor_kin}, armor_exp={self.armor_exp})")
+
+# Create instances
+osprey_repair = LogiShip(
+    name='Osprey',
+    rep_type='Shield',
+    rep_number_type_1=4,
+    rep_number_type_2=0,
+    rep_value_type_1=69.7,
+    rep_value_type_2=0
+)
+
+calmil_drake_navy = TargetShip(
+    name='calmil_drake_navy',
+    shield_EM=.647,
+    shield_trm=.717,
+    shield_kin=.723,
+    shield_exp=.769,
+    armor_EM=.60,
+    armor_trm=.35,
+    armor_kin=.25,
+    armor_exp=.10
+)
+
+base_caldari_fake = TargetShip(
+name = 'base_caldari',
+shield_EM = .0,
+shield_trm = .35,
+shield_kin = .25,
+shield_exp = .1,
+armor_EM = .60,
+armor_trm = .35,
+armor_kin = .25,
+armor_exp = .10
+)
+
+def analyze_repair(logi, target):
+    repairs = logi.repair_ship(target)
+    print(f"Repairs: {repairs}")
+
+analyze_repair(osprey_repair, calmil_drake_navy)
+
+
+# resolved - watch for
+
+# Issues Identified:
+# Incorrect Tuple Assignment:
+
+# The shield and armor attributes in the target class are being assigned as tuples because of the trailing comma
+# (e.g., self.shield_trm = shield_trm,). This causes the attributes to be tuples instead of integers.
+# Undefined Variables:
+
+# Variables shield_kin_repair and shield_exp_repair are referenced before assignment in the repair_ship method.
+# Redundant Assignment:
+
+# The line reps_target = default_amarr_target inside the repair_ship method overwrites the reps_target parameter,
+# making the method only repair default_amarr_target regardless of the actual target passed to it.
+
+
